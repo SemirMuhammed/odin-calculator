@@ -1,5 +1,4 @@
 const ansOut = document.getElementById("result");
-
 const clearAllBtn = document.getElementById("clear-history");
 const clearScreenBtn = document.getElementById("clear-screen");
 const percentBtn = document.getElementById("percent");
@@ -9,8 +8,36 @@ const decimalBtn = document.getElementById("decimal");
 const signBtn = document.getElementById("sign");
 const equalToBtn = document.getElementById("equal");
 
-let tempNum, firstNum, secondNum, opr,
-	oprClicked, isFirstNum, isNext;
+let tempNum, firstNum, secondNum, oprClicked, isFirstNum, isNext;
+
+clearAll();
+numbersBtn.forEach(num => num.onclick = () => getNum(num.id));
+operatorsBtn.forEach(opr => opr.onclick = () => getOpr(opr.id));
+equalToBtn.onclick = getAns;
+clearAllBtn.onclick = clearAll;
+clearScreenBtn.onclick = getClear;
+percentBtn.onclick = getPercent;
+signBtn.onclick = getSign;
+decimalBtn.onclick = getDecimal;
+
+window.addEventListener("keydown", (event) => {
+	const nums = "0123456789";
+	const oprs = {
+		'+': 'add',
+		"-": "substract",
+		"*": "multiply",
+		"/": "divide",
+	};
+
+	if (nums.includes(event.key)) getNum(event.key);
+	if (oprs[event.key]) getOpr(oprs[event.key]);
+	if (event.key === "Enter" || event.key === "=") getAns();
+	if (event.key === ".") getDecimal();
+	if (event.key === "%") getPercent();
+	if (event.key === " ") getSign();
+	if (event.key === "Delete") clearAll();
+	if (event.key === "Backspace") getClear();
+})
 
 function clearAll(temp = true, second = true) {
 	secondNum = "";
@@ -22,7 +49,6 @@ function clearAll(temp = true, second = true) {
 	}
 	ansOut.textContent = "";
 }
-clearAll();
 
 function storeNum(value) {
 	ansOut.textContent = value;
@@ -34,20 +60,18 @@ function storeNum(value) {
 	}
 }
 
-clearAllBtn.addEventListener("click", clearAll);
 
-clearScreenBtn.addEventListener("click", () => {
+function getClear() {
 	tempNum = "";
 	storeNum("");
-});
+}
 
-percentBtn.addEventListener("click", () => {
+function getPercent() {
 	if (firstNum === "MATH ERROR" || tempNum === "MATH ERROR") return;
 	if (!tempNum || tempNum === '0' || tempNum === '0.') return;
-	console.log("Passed");
 	tempNum = evaluate(tempNum, 100, "divide");
 	storeNum(tempNum);
-});
+}
 
 add = (a, b) => a + b;
 substract = (a, b) => a - b;
@@ -73,23 +97,22 @@ function evaluate(a, b, opr) {
 	return result.toString();
 }
 
-numbersBtn.forEach(number => number.onclick = () => {
+function getNum(input) {
 	if (isNext) clearAll();
 
 	if (tempNum.length > 8) return;
 
 	if (tempNum === '0') {
-		if (number.id === '0') return;
+		if (input === '0') return;
 		tempNum = "";
 	};
 
-	tempNum += number.id;
+	tempNum += input;
 	storeNum(tempNum);
-})
+};
 
-operatorsBtn.forEach(operator => operator.onclick = () => {
+function getOpr(input) {
 	if (firstNum === "MATH ERROR" || tempNum === "MATH ERROR") return;
-	opr = operator.textContent;
 	if (!firstNum) return;
 	else if (isNext) clearAll(true, false);
 	else if (secondNum && oprClicked) {
@@ -101,11 +124,10 @@ operatorsBtn.forEach(operator => operator.onclick = () => {
 
 	isFirstNum = false;
 	tempNum = "";
-	oprClicked = operator.id;
-})
+	oprClicked = input;
+}
 
-
-equalToBtn.onclick = () => {
+function getAns() {
 	if (firstNum === "MATH ERROR" || tempNum === "MATH ERROR") return;
 	if (firstNum && secondNum && oprClicked) {
 		tempNum = evaluate(firstNum, secondNum, oprClicked);
@@ -115,7 +137,7 @@ equalToBtn.onclick = () => {
 	}
 }
 
-decimalBtn.onclick = () => {
+function getDecimal() {
 	if (firstNum === "MATH ERROR" || tempNum === "MATH ERROR") return;
 	if (!tempNum) tempNum = '0';
 	if (isNext) clearAll(false);
@@ -123,7 +145,7 @@ decimalBtn.onclick = () => {
 	storeNum(tempNum);
 }
 
-signBtn.onclick = () => {
+function getSign() {
 	if (firstNum === "MATH ERROR" || tempNum === "MATH ERROR") return;
 	if (!tempNum || tempNum === '0' || tempNum === '0.') return;
 	if (isNext) clearAll(false);
@@ -133,3 +155,4 @@ signBtn.onclick = () => {
 	tempNum = tempArray.join("");
 	storeNum(tempNum);
 }
+
