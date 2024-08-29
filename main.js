@@ -43,7 +43,7 @@ clearScreenBtn.addEventListener("click", () => {
 
 percentBtn.addEventListener("click", () => {
 	if (firstNum === "MATH ERROR" || tempNum === "MATH ERROR") return;
-	tempNum /= 100;
+	tempNum = evaluate(tempNum, 100, "divide");
 	storeNum(tempNum);
 });
 
@@ -59,9 +59,9 @@ function evaluate(a, b, opr) {
 	}
 	let result = window[opr](+a, +b);
 
-	if (result.toString().length > 10) {
+	if (result.toString().length >= 10) {
 		if (Math.abs(result) < 1 && result != 0) {
-			result = result.toPrecision(8);
+			result = result.toFixed(8);
 		}
 		else {
 			if (result >= 0) result = result.toPrecision(5);
