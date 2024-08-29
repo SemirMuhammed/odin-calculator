@@ -7,7 +7,29 @@
 
 body {
 	display: flex;
+	height: 100vh;
 	flex-direction: column;
+	background-color: #478778;
+	align-items: center;
+	justify-content: space-between;
+	gap: 16px;
+}
+
+header {
+	font-size: 5vw;
+	color: #FCFCFC;
+	margin: 16px;
+}
+
+footer p a {
+	font-size: 3vw;
+	text-decoration: none;
+	color: #7393B3;
+	height: 3vw;
+}
+
+footer p a img {
+	height: 3vw;
 }
 
 main {
@@ -67,5 +89,12 @@ main .input {
 }
 
 .input button:hover {
+	background-color: #A3955B;
+	width: 75px;
+	height: 75px;
+	margin: 7.5px;
+}
+
+.input .opr-clicked {
 	background-color: #A3955B;
 }
