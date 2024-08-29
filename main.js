@@ -85,9 +85,10 @@ function evaluate(a, b, opr) {
 	}
 	let result = window[opr](+a, +b);
 
-	if (result.toString().length >= 10) {
+	if (result.toString().length > 10) {
 		if (Math.abs(result) < 1 && result != 0) {
-			result = result.toFixed(8);
+			if (result < 0) result = result.toFixed(7);
+			else result = result.toFixed(8);
 		}
 		else {
 			if (result >= 0) result = result.toPrecision(5);
@@ -139,6 +140,7 @@ function getAns() {
 
 function getDecimal() {
 	if (firstNum === "MATH ERROR" || tempNum === "MATH ERROR") return;
+	if (tempNum.includes(".")) return;
 	if (!tempNum) tempNum = '0';
 	if (isNext) clearAll(false);
 	tempNum += '.';
@@ -149,10 +151,7 @@ function getSign() {
 	if (firstNum === "MATH ERROR" || tempNum === "MATH ERROR") return;
 	if (!tempNum || tempNum === '0' || tempNum === '0.') return;
 	if (isNext) clearAll(false);
-	const tempArray = tempNum.split("");
-
-	(tempArray[0] == '-') ? tempArray.shift() : tempArray.unshift('-');
-	tempNum = tempArray.join("");
+	tempNum = evaluate(tempNum, -1, "multiply");
 	storeNum(tempNum);
 }
 
