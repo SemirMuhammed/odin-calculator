@@ -43,6 +43,8 @@ clearScreenBtn.addEventListener("click", () => {
 
 percentBtn.addEventListener("click", () => {
 	if (firstNum === "MATH ERROR" || tempNum === "MATH ERROR") return;
+	if (!tempNum || tempNum === '0' || tempNum === '0.') return;
+	console.log("Passed");
 	tempNum = evaluate(tempNum, 100, "divide");
 	storeNum(tempNum);
 });
@@ -75,6 +77,12 @@ numbersBtn.forEach(number => number.onclick = () => {
 	if (isNext) clearAll();
 
 	if (tempNum.length > 8) return;
+
+	if (tempNum === '0') {
+		if (number.id === '0') return;
+		tempNum = "";
+	};
+
 	tempNum += number.id;
 	storeNum(tempNum);
 })
@@ -117,7 +125,7 @@ decimalBtn.onclick = () => {
 
 signBtn.onclick = () => {
 	if (firstNum === "MATH ERROR" || tempNum === "MATH ERROR") return;
-	if (!tempNum) return;
+	if (!tempNum || tempNum === '0' || tempNum === '0.') return;
 	if (isNext) clearAll(false);
 	const tempArray = tempNum.split("");
 
