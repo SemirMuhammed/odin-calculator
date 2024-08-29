@@ -1,51 +1,50 @@
-const answerOutput = document.getElementById("result");
-const expressionOutput = document.getElementById("expression");
+const ansOut = document.getElementById("result");
 
 const clearAllBtn = document.getElementById("clear-history");
 const clearScreenBtn = document.getElementById("clear-screen");
-const percentModeBtn = document.getElementById("percent");
+const percentBtn = document.getElementById("percent");
 const numbersBtn = document.querySelectorAll(".number");
 const operatorsBtn = document.querySelectorAll(".operator");
-const decimalModeBtn = document.getElementById("decimal");
-const signModeBtn = document.getElementById("sign");
+const decimalBtn = document.getElementById("decimal");
+const signBtn = document.getElementById("sign");
 const equalToBtn = document.getElementById("equal");
 
-let tempNumber, firstNumber, secondNumber,
-	operatorClicked, isFirstNumber, isNext;
+let tempNum, firstNum, secondNum, opr,
+	oprClicked, isFirstNum, isNext;
 
 function clearAll(temp = true, second = true) {
-	secondNumber = "";
+	secondNum = "";
 	isNext = false;
-	if (temp) tempNumber = "";
+	if (temp) tempNum = "";
 	if (second) {
-		firstNumber = operatorClicked = "";
-		answerOutput.textContent = expressionOutput.textContent = "";
-		isFirstNumber = true;
+		firstNum = oprClicked = "";
+		isFirstNum = true;
 	}
+	ansOut.textContent = "";
 }
 clearAll();
 
-function storeNumber(value) {
-	answerOutput.textContent = value;
-	if (isFirstNumber) {
-		firstNumber = value;
-
+function storeNum(value) {
+	ansOut.textContent = value;
+	if (isFirstNum) {
+		firstNum = value;
 	}
 	else {
-		secondNumber = value;
+		secondNum = value;
 	}
 }
 
 clearAllBtn.addEventListener("click", clearAll);
 
 clearScreenBtn.addEventListener("click", () => {
-	tempNumber = "";
-	storeNumber("");
+	tempNum = "";
+	storeNum("");
 });
 
-percentModeBtn.addEventListener("click", () => {
-	tempNumber /= 100;
-	storeNumber(tempNumber);
+percentBtn.addEventListener("click", () => {
+	if (firstNum === "MATH ERROR" || tempNum === "MATH ERROR") return;
+	tempNum /= 100;
+	storeNum(tempNum);
 });
 
 add = (a, b) => a + b;
@@ -54,51 +53,75 @@ multiply = (a, b) => a * b;
 divide = (a, b) => a / b;
 
 function evaluate(a, b, opr) {
-	const result = window[opr](+a, +b);
+	if (+b === 0 && opr === 'divide') {
+		ansOut.textContent = "MATH ERROR";
+		return "MATH ERROR";
+	}
+	let result = window[opr](+a, +b);
 
-	return result.toString().slice(0, 10);
+	if (result.toString().length > 10) {
+		if (Math.abs(result) < 1 && result != 0) {
+			result = result.toPrecision(8);
+		}
+		else {
+			if (result >= 0) result = result.toPrecision(5);
+			else result = result.toPrecision(4);
+		}
+	}
+	return result.toString();
 }
 
 numbersBtn.forEach(number => number.onclick = () => {
 	if (isNext) clearAll();
 
-	tempNumber += number.id;
-	storeNumber(tempNumber);
+	if (tempNum.length > 8) return;
+	tempNum += number.id;
+	storeNum(tempNum);
 })
 
 operatorsBtn.forEach(operator => operator.onclick = () => {
-	if (!firstNumber) return;
+	if (firstNum === "MATH ERROR" || tempNum === "MATH ERROR") return;
+	opr = operator.textContent;
+	if (!firstNum) return;
 	else if (isNext) clearAll(true, false);
-	else if (secondNumber && operatorClicked) {
-		firstNumber = evaluate(firstNumber, secondNumber, operatorClicked);
-		answerOutput.textContent = firstNumber;
+	else if (secondNum && oprClicked) {
+		firstNum = evaluate(firstNum, secondNum, oprClicked);
+		if (firstNum === "MATH ERROR") return isNext = true;
+		ansOut.textContent = firstNum;
+		secondNum = "";
 	};
-	isFirstNumber = false;
-	tempNumber = "";
-	operatorClicked = operator.id;
+
+	isFirstNum = false;
+	tempNum = "";
+	oprClicked = operator.id;
 })
 
+
 equalToBtn.onclick = () => {
-	if (firstNumber && secondNumber && operatorClicked) {
-		tempNumber = evaluate(firstNumber, secondNumber, operatorClicked);
-		answerOutput.textContent = firstNumber = tempNumber;
+	if (firstNum === "MATH ERROR" || tempNum === "MATH ERROR") return;
+	if (firstNum && secondNum && oprClicked) {
+		tempNum = evaluate(firstNum, secondNum, oprClicked);
+		if (tempNum === "MATH ERROR") return isNext = true;
+		ansOut.textContent = firstNum = tempNum;
 		isNext = true;
 	}
 }
 
-decimalModeBtn.onclick = () => {
-	if (!tempNumber) tempNumber = '0';
+decimalBtn.onclick = () => {
+	if (firstNum === "MATH ERROR" || tempNum === "MATH ERROR") return;
+	if (!tempNum) tempNum = '0';
 	if (isNext) clearAll(false);
-	tempNumber += '.';
-	storeNumber(tempNumber);
+	tempNum += '.';
+	storeNum(tempNum);
 }
 
-signModeBtn.onclick = () => {
-	if (!tempNumber) return;
+signBtn.onclick = () => {
+	if (firstNum === "MATH ERROR" || tempNum === "MATH ERROR") return;
+	if (!tempNum) return;
 	if (isNext) clearAll(false);
-	const tempArray = tempNumber.split("");
+	const tempArray = tempNum.split("");
 
 	(tempArray[0] == '-') ? tempArray.shift() : tempArray.unshift('-');
-	tempNumber = tempArray.join("");
-	storeNumber(tempNumber);
+	tempNum = tempArray.join("");
+	storeNum(tempNum);
 }
